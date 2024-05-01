@@ -199,19 +199,32 @@ async function changePassword(request, response, next) {
  */
 async function paginate(request, response, next) {
   try {
-    const page = parseInt(request.query.page) - 1 || 0;
+    const page = parseInt(request.query.page) || 0;
     const limit = parseInt(request.query.limut) || 5;
     const search = request.query.search || '';
-    let sort = request.query.sort || '';
+    const sort = request.query.sort || '';
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const users = await usersService.getUser();
+    const paginatedUsers = user.slices(startIndex, endIndex);
 
     let sortBy = {};
-    if (sort[1]) {
-      sortBy[sort[0]] = sort[1];
-    } else {
-      sortBy[sort[0]] = 'asc';
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortBy[field] = order === 'desc' ? -1 : 1;
     }
 
-    const email = await Email.find({ name: { $regex: search, $options: 'i' } });
+    const filteredUsers = await usersService.getFilteredUsers(search, sort);
+
+    response.json({
+      page_number: page,
+      page_size: limit,
+      count: filteredUsers.length,
+      total_page: Math.ceil(filteredUsers.length / limit),
+      data: paginatedUsers,
+    });
   } catch (error) {
     return next(error);
   }
@@ -224,4 +237,5 @@ module.exports = {
   updateUser,
   deleteUser,
   changePassword,
+  paginate,
 };
