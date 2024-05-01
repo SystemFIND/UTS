@@ -1,0 +1,15 @@
+meta {
+  name: Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:5000/api/users
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcklkIjoiNjYwY2NmYWU3ODkwMWQ3NzQ0YjViZTc4IiwiaWF0IjoxNzE0NTM2NDk1LCJleHAiOjE3MTQ2MjI4OTV9.gAqztg2-aNZAxuiPNfy-type74Zt71eqtMM--ji7738
+}

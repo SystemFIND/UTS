@@ -1,5 +1,6 @@
 const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
+const { func } = require('joi');
 
 /**
  * Handle get list of users request
@@ -184,6 +185,33 @@ async function changePassword(request, response, next) {
     }
 
     return response.status(200).json({ id: request.params.id });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Pagination, filter, sort, and search request
+ * @param {object} request - Express request object
+ * @param {object} response - Express response object
+ * @param {object} next - Express route middlewares
+ * @returns {object} Response object or pass an error to the next route
+ */
+async function paginate(request, response, next) {
+  try {
+    const page = parseInt(request.query.page) - 1 || 0;
+    const limit = parseInt(request.query.limut) || 5;
+    const search = request.query.search || '';
+    let sort = request.query.sort || '';
+
+    let sortBy = {};
+    if (sort[1]) {
+      sortBy[sort[0]] = sort[1];
+    } else {
+      sortBy[sort[0]] = 'asc';
+    }
+
+    const email = await Email.find({ name: { $regex: search, $options: 'i' } });
   } catch (error) {
     return next(error);
   }
