@@ -1,3 +1,4 @@
+const { func } = require('joi');
 const { User } = require('../../../models');
 
 /**
@@ -81,6 +82,13 @@ async function changePassword(id, password) {
   return User.updateOne({ _id: id }, { $set: { password } });
 }
 
+async function paginate(name, email) {
+  return User.paginate({
+    name,
+    email,
+  });
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -89,4 +97,5 @@ module.exports = {
   deleteUser,
   getUserByEmail,
   changePassword,
+  paginate,
 };

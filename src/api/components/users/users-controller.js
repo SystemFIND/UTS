@@ -199,32 +199,19 @@ async function changePassword(request, response, next) {
  */
 async function paginate(request, response, next) {
   try {
-    const page = parseInt(request.query.page) || 0;
-    const limit = parseInt(request.query.limut) || 5;
+    const page = parseInt(request.query.page) - 1 || 0; //the default is 0
+    const limit = parseInt(request.query.limut) || 5; //the default is 5
     const search = request.query.search || '';
     const sort = request.query.sort || '';
 
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+    const paginatedUsers = await usersService.paginate(
+      page,
+      limit,
+      search,
+      sort
+    );
 
-    const users = await usersService.getUser();
-    const paginatedUsers = user.slices(startIndex, endIndex);
-
-    let sortBy = {};
-    if (sort) {
-      const [field, order] = sort.split(':');
-      sortBy[field] = order === 'desc' ? -1 : 1;
-    }
-
-    const filteredUsers = await usersService.getFilteredUsers(search, sort);
-
-    response.json({
-      page_number: page,
-      page_size: limit,
-      count: filteredUsers.length,
-      total_page: Math.ceil(filteredUsers.length / limit),
-      data: paginatedUsers,
-    });
+    response.json(paginatedUsers);
   } catch (error) {
     return next(error);
   }

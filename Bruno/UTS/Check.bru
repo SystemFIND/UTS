@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: http://localhost:5000/api/users?page_number=1
+  url: http://localhost:5000/api/users
   body: json
   auth: none
 }
 
 query {
-  page_number: 1
+  ~page_number: 1
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcklkIjoiNjYwY2NmYWU3ODkwMWQ3NzQ0YjViZTc4IiwiaWF0IjoxNzE0NTM2NDk1LCJleHAiOjE3MTQ2MjI4OTV9.gAqztg2-aNZAxuiPNfy-type74Zt71eqtMM--ji7738
+  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcklkIjoiNjYwY2NmYWU3ODkwMWQ3NzQ0YjViZTc4IiwiaWF0IjoxNzE0NjI4NTY2LCJleHAiOjE3MTQ3MTQ5NjZ9.Wr9WEHJEieWywrOfGA9ThPZ0IGbdCFDrVmHCtajrulQ
 }

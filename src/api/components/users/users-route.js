@@ -11,12 +11,7 @@ module.exports = (app) => {
   app.use('/users', route);
 
   // Get list of users
-  route.get(
-    '/',
-    authenticationMiddleware,
-    usersControllers.getUsers,
-    usersControllers.paginate
-  ); //add Paginate
+  route.get('/', authenticationMiddleware, usersControllers.getUsers);
 
   // Create user
   route.post(
