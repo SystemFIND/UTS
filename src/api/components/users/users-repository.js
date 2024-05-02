@@ -1,5 +1,6 @@
 const { func } = require('joi');
 const { User } = require('../../../models');
+const { sortBy } = require('lodash');
 
 /**
  * Get a list of users
@@ -83,7 +84,7 @@ async function changePassword(id, password) {
 }
 
 async function paginate(name, email) {
-  return User.paginate({
+  return User.getUser({
     name,
     email,
   });

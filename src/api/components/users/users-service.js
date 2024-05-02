@@ -162,6 +162,7 @@ async function changePassword(userId, password) {
   return true;
 }
 
+// paginate
 async function paginate(page, limit, search, sort) {
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
@@ -181,9 +182,9 @@ async function paginate(page, limit, search, sort) {
     const [field, order] = sort.split(':');
     filteredUsers.sort((a, b) => {
       if (order === 'desc') {
-        return b[field].localCompare(a[field]);
+        return b[field].localeCompare(a[field]);
       } else {
-        return a[field].localCompare(b[field]);
+        return a[field].localeCompare(b[field]);
       }
     });
   }
@@ -195,7 +196,7 @@ async function paginate(page, limit, search, sort) {
     page_size: limit,
     count: paginatedUsers.length,
     total_pages: Math.ceil(filteredUsers.length / limit),
-    has_previuos_page: page > 1,
+    has_previous_page: page > 1,
     has_next_page: endIndex < filteredUsers.length,
     data: paginatedUsers,
   };

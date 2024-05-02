@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: http://localhost:5000/api/users
+  url: http://localhost:5000/api/users?page_=1
   body: json
   auth: none
 }
 
 query {
-  ~page_number: 1
+  page_: 1
+  : 
 }
 
 headers {
