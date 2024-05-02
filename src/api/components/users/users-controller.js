@@ -29,8 +29,6 @@ async function getUser(request, response, next) {
   try {
     const user = await usersService.getUser(request.params.id);
 
-    const User = await usersService.paginate(page, limit, sort, search);
-
     if (!user) {
       throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Unknown user');
     }
@@ -199,25 +197,6 @@ async function changePassword(request, response, next) {
  * @param {object} next - Express route middlewares
  * @returns {object} Response object or pass an error to the next route
  */
-async function paginate(request, response, next) {
-  try {
-    const page = parseInt(request.query.page) - 1 || 0; //the default is 0
-    const limit = parseInt(request.query.limit) || 5; //the default is 5
-    const search = request.query.search || '';
-    const sort = request.query.sort || '';
-
-    const paginatedUsers = await usersService.paginate(
-      page,
-      limit,
-      search,
-      sort
-    );
-
-    response.json(paginatedUsers);
-  } catch (error) {
-    return next(error);
-  }
-}
 
 module.exports = {
   getUsers,
@@ -226,5 +205,4 @@ module.exports = {
   updateUser,
   deleteUser,
   changePassword,
-  paginate,
 };

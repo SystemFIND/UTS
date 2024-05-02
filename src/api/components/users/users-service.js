@@ -162,46 +162,6 @@ async function changePassword(userId, password) {
   return true;
 }
 
-// paginate
-async function paginate(page, limit, search, sort) {
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-
-  const user = await usersRepository.getUser();
-
-  let filteredUsers = user;
-
-  // Search based on name, and email
-  if (search) {
-    filteredUsers = filteredUsers.filter(
-      (user) => user.name.includes(search) || user.email.includes(search)
-    );
-  }
-
-  if (sort) {
-    const [field, order] = sort.split(':');
-    filteredUsers.sort((a, b) => {
-      if (order === 'desc') {
-        return b[field].localeCompare(a[field]);
-      } else {
-        return a[field].localeCompare(b[field]);
-      }
-    });
-  }
-
-  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-
-  return {
-    page_number: page,
-    page_size: limit,
-    count: paginatedUsers.length,
-    total_pages: Math.ceil(filteredUsers.length / limit),
-    has_previous_page: page > 1,
-    has_next_page: endIndex < filteredUsers.length,
-    data: paginatedUsers,
-  };
-}
-
 module.exports = {
   getUsers,
   getUser,
@@ -211,5 +171,4 @@ module.exports = {
   emailIsRegistered,
   checkPassword,
   changePassword,
-  paginate,
 };

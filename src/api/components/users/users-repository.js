@@ -83,13 +83,6 @@ async function changePassword(id, password) {
   return User.updateOne({ _id: id }, { $set: { password } });
 }
 
-async function paginate(name, email) {
-  return User.getUser({
-    name,
-    email,
-  });
-}
-
 module.exports = {
   getUsers,
   getUser,
@@ -98,5 +91,4 @@ module.exports = {
   deleteUser,
   getUserByEmail,
   changePassword,
-  paginate,
 };
