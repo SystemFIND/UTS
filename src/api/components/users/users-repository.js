@@ -1,6 +1,4 @@
-const { func } = require('joi');
 const { User } = require('../../../models');
-const { sortBy } = require('lodash');
 
 /**
  * Get a list of users

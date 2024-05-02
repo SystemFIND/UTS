@@ -1,6 +1,6 @@
 const usersRepository = require('./users-repository');
 const { hashPassword, passwordMatched } = require('../../../utils/password');
-const { User } = require('../../../models');
+const { filter } = require('lodash');
 
 /**
  * Get list of users
@@ -162,6 +162,48 @@ async function changePassword(userId, password) {
   return true;
 }
 
+/**
+ * Change user password
+ * @param {Integer} page_number - Page
+ * @param {Integer} page_size - Limit
+ * @param {String} search - Search
+ * @param {String} sort - Sort
+ */
+async function paginate(page_number, page_size, search, sort) {
+  const startIndex = (page_number - 1) * page_size;
+  const endIndex = page_number * page_size;
+
+  // Mengambil data menggunakan getUser
+  const users = await getUsers();
+
+  // Search
+  let filter = users;
+  if (search) {
+    const to = search.toLowerCase(); // convert to lowercase agar bisa mencakup uppercase
+
+    filter = filter.filter(
+      (user) =>
+        user.name.toLowerCase().includes(to) ||
+        user.email.toLowerCase().includes(to)
+    );
+  }
+
+  // Sort
+
+  // Pagination
+  const paginated = filter.slice(startIndex, endIndex);
+
+  return {
+    page_number: page_number,
+    page_size: page_size,
+    count: paginated.length,
+    total_pages: Math.ceil(filter.length / page_size),
+    has_previous_page: page_number > 1,
+    has_next_page: endIndex < filter.length,
+    data: paginated,
+  };
+}
+
 module.exports = {
   getUsers,
   getUser,
@@ -171,4 +213,5 @@ module.exports = {
   emailIsRegistered,
   checkPassword,
   changePassword,
+  paginate,
 };

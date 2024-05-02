@@ -1,6 +1,6 @@
 const usersService = require('./users-service');
 const { errorResponder, errorTypes } = require('../../../core/errors');
-const { func } = require('joi');
+const { models } = require('mongoose');
 
 /**
  * Handle get list of users request
@@ -12,7 +12,21 @@ const { func } = require('joi');
 async function getUsers(request, response, next) {
   try {
     const users = await usersService.getUsers();
-    return response.status(200).json(users);
+
+    // pagination, sort , and search
+    const page_number = parseInt(request.query.page_number) || 1; //default page is 1
+    const page_size = parseInt(request.query.page_size) || 5; //default limit is 5
+    const search = request.query.search || '';
+    const sort = request.query.sort || '';
+
+    const paginated = await usersService.paginate(
+      page_number,
+      page_size,
+      search,
+      sort
+    );
+
+    return response.status(200).json(paginated);
   } catch (error) {
     return next(error);
   }
