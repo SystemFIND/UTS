@@ -187,6 +187,17 @@ async function paginate(page_number, page_size, search, sort) {
   }
 
   // Sort
+  if (sort) {
+    const [email, order] = sort.split(':');
+    filter.sort((a, b) => {
+      if (order === 'desc') {
+        // menggunakan localeCompare sebagai pembanding antara string sesuai kaidah antara huruf
+        return b[email].localeCompare(a[email]);
+      } else {
+        return a[email].localeCompare(b[email]);
+      }
+    });
+  }
 
   // Pagination
   const paginated = filter.slice(startIndex, endIndex);
