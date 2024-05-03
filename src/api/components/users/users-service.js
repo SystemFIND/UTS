@@ -179,13 +179,11 @@ async function paginate(page_number, page_size, search, sort) {
   // Search
   let filter = users;
   if (search) {
-    const to = search.toLowerCase(); // convert to lowercase agar bisa mencakup uppercase
+    // Deklarasi sekaligus mengconvert to lowercase
+    // convert to lowercase agar bisa mencakup uppercase
+    const [email, key] = search.split(':').map((part) => part.toLowerCase());
 
-    filter = filter.filter(
-      (user) =>
-        user.name.toLowerCase().includes(to) ||
-        user.email.toLowerCase().includes(to)
-    );
+    filter = filter.filter((user) => user[email].toLowerCase().includes(key));
   }
 
   // Sort
