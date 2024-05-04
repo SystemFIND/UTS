@@ -5,7 +5,7 @@ const authenticationServices = require('./authentication-service');
 const loginAttempts = new Map();
 
 const maxAttempts = 5; // Maximum Wrong login
-const duration = 30 * 60 * 1000; //Durasi tidak bisa login 30 menit
+const duration = 30 * 60 * 1000; //Durasi tidak bisa login, 30 menit
 
 /**
  * Handle login request
