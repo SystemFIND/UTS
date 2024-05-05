@@ -5,18 +5,18 @@ meta {
 }
 
 get {
-  url: http://localhost:5000/api/users?page_number=1&page_size=3&search=email:mongodb&sort=email:desc
+  url: http://localhost:5000/api/users?page_number=1&page_size=5&search=email:mongodb&sort=email:desc
   body: json
   auth: none
 }
 
 query {
   page_number: 1
-  page_size: 3
+  page_size: 5
   search: email:mongodb
   sort: email:desc
 }
 
 headers {
-  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcklkIjoiNjYwY2NmYWU3ODkwMWQ3NzQ0YjViZTc4IiwiaWF0IjoxNzE0NzI5NTQ3LCJleHAiOjE3MTQ4MTU5NDd9.nVYKRGpOMKYPXOLALapPn5JL5I4BN-ovq42MvjZJ-0I
+  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwidXNlcklkIjoiNjYwY2NmYWU3ODkwMWQ3NzQ0YjViZTc4IiwiaWF0IjoxNzE0OTAzMTg1LCJleHAiOjE3MTQ5ODk1ODV9.IOWkcu3PHVA4OP1AckLcctd4A3EN9pk0RaOQrqL-u-w
 }

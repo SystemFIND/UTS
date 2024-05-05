@@ -28,9 +28,6 @@ async function login(request, response, next) {
           errorTypes.FORBIDDEN,
           'Too many login attemps. Please try again later.'
         );
-      } else {
-        // Reset jumlah login attemps
-        loginAttempts.delete(email);
       }
     }
 
@@ -50,6 +47,9 @@ async function login(request, response, next) {
         errorTypes.INVALID_CREDENTIALS,
         'Wrong email or password'
       );
+    } else {
+      // Reset jumlah login attemps jika berhasil login
+      loginAttempts.delete(email);
     }
 
     return response.status(200).json(loginSuccess);
