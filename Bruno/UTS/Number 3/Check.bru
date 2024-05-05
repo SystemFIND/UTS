@@ -1,0 +1,20 @@
+meta {
+  name: Check
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:5000/api/users?page_size=15&sort=email:
+  body: none
+  auth: none
+}
+
+query {
+  page_size: 15
+  sort: email:
+}
+
+headers {
+  Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGJhbmsuY28uaWQiLCJ1c2VySWQiOiI2NjM3OGM2OTUzMmU4ZWQ5NWUxZTUyMDgiLCJpYXQiOjE3MTQ5MzQ1NzgsImV4cCI6MTcxNTAyMDk3OH0.0pdQLiFuXCJ7YLwxfmE9Or4samynDYY4H3MhogFXaQg
+}

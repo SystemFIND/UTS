@@ -1,6 +1,5 @@
 const usersService = require('./users-service');
-const { errorResponder, errorTypes } = require('../../../core/errors');
-const { models } = require('mongoose');
+const { errorResponder, errorTypes } = require('../../../../core/errors');
 
 /**
  * Handle get list of users request
@@ -53,6 +52,20 @@ async function getUser(request, response, next) {
   }
 }
 
+async function balanced(request, response, next) {
+  try {
+    const user = await usersService.balanced(request.params.id);
+
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Unknown user');
+    }
+
+    return response.status(200).json(user);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 /**
  * Handle create user request
  * @param {object} request - Express request object
@@ -62,10 +75,12 @@ async function getUser(request, response, next) {
  */
 async function createUser(request, response, next) {
   try {
-    const name = request.body.name;
+    const namaLengkap = request.body.namaLengkap;
     const email = request.body.email;
     const password = request.body.password;
     const password_confirm = request.body.password_confirm;
+    const pin = request.body.pin;
+    const jenisTabungan = request.body.jenisTabungan;
 
     // Check confirmation password
     if (password !== password_confirm) {
@@ -84,7 +99,7 @@ async function createUser(request, response, next) {
       );
     }
 
-    const success = await usersService.createUser(name, email, password);
+    const success = await usersService.createUser(namaLengkap, email, password);
     if (!success) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
@@ -92,7 +107,25 @@ async function createUser(request, response, next) {
       );
     }
 
-    return response.status(200).json({ name, email });
+    return response.status(200).json({ namaLengkap, email });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function deposit(request, response, next) {
+  try {
+    const jumlahSetoran = parseInt(request.body.saldo);
+
+    const user = await usersService.deposit(jumlahSetoran);
+
+    if (!user) {
+      throw errorResponder(errorTypes.UNPROCESSABLE_ENTITY, 'Unknown user');
+    }
+
+    return response
+      .status(200)
+      .json({ message: 'Deposit successful', balance: updatedUser.balance });
   } catch (error) {
     return next(error);
   }
@@ -108,7 +141,7 @@ async function createUser(request, response, next) {
 async function updateUser(request, response, next) {
   try {
     const id = request.params.id;
-    const name = request.body.name;
+    const namaLengkap = request.body.namaLengkap;
     const email = request.body.email;
 
     // Email must be unique
@@ -120,7 +153,7 @@ async function updateUser(request, response, next) {
       );
     }
 
-    const success = await usersService.updateUser(id, name, email);
+    const success = await usersService.updateUser(id, namaLengkap, email);
     if (!success) {
       throw errorResponder(
         errorTypes.UNPROCESSABLE_ENTITY,
@@ -204,11 +237,52 @@ async function changePassword(request, response, next) {
   }
 }
 
+async function changePin(request, response, next) {
+  try {
+    // Check password confirmation
+    if (request.body.pin_new !== request.body.pin_confirm) {
+      throw errorResponder(
+        errorTypes.INVALID_PIN,
+        'Pin confirmation mismatched'
+      );
+    }
+
+    // Check password
+    if (
+      !(await usersService.checkPassword(
+        request.params.id,
+        request.body.password
+      ))
+    ) {
+      throw errorResponder(errorTypes.INVALID_CREDENTIALS, 'Wrong password');
+    }
+
+    const changeSuccess = await usersService.changePin(
+      request.params.id,
+      request.body.password_new
+    );
+
+    if (!changeSuccess) {
+      throw errorResponder(
+        errorTypes.UNPROCESSABLE_ENTITY,
+        'Failed to change password'
+      );
+    }
+
+    return response.status(200).json({ id: request.params.id });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   getUsers,
   getUser,
+  balanced,
   createUser,
+  deposit,
   updateUser,
   deleteUser,
   changePassword,
+  changePin,
 };

@@ -1,6 +1,6 @@
 const usersRepository = require('./users-repository');
-const { hashPassword, passwordMatched } = require('../../../utils/password');
-const { filter } = require('lodash');
+const { hashPassword, passwordMatched } = require('../../../../utils/password');
+const { func } = require('joi');
 
 /**
  * Get list of users
@@ -14,8 +14,9 @@ async function getUsers() {
     const user = users[i];
     results.push({
       id: user.id,
-      name: user.name,
+      namaLengkap: user.namaLengkap,
       email: user.email,
+      jenisTabungan: user.jenisTabungan,
     });
   }
 
@@ -37,24 +38,38 @@ async function getUser(id) {
 
   return {
     id: user.id,
-    name: user.name,
+    namaLengkap: user.namaLengkap,
     email: user.email,
+    jenisTabungan: user.jenisTabungan,
+  };
+}
+
+async function balanced(id) {
+  const saldo = await usersRepository.getBalanced(id);
+
+  return {
+    saldo: saldo,
   };
 }
 
 /**
  * Create new user
- * @param {string} name - Name
+ * @param {string} namaLengkap - Name
  * @param {string} email - Email
  * @param {string} password - Password
  * @returns {boolean}
  */
-async function createUser(name, email, password) {
+async function createUser(namaLengkap, email, password, jenisTabungan) {
   // Hash password
   const hashedPassword = await hashPassword(password);
 
   try {
-    await usersRepository.createUser(name, email, hashedPassword);
+    await usersRepository.createUser(
+      namaLengkap,
+      email,
+      hashedPassword,
+      jenisTabungan
+    );
   } catch (err) {
     return null;
   }
@@ -62,14 +77,31 @@ async function createUser(name, email, password) {
   return true;
 }
 
+async function deposit(id, jumlahSetoran) {
+  try {
+    const user = await usersRepository.getUser(id);
+
+    if (!user) {
+      return null;
+    }
+
+    user.saldo += jumlahSetoran;
+
+    await user.save();
+    return user;
+  } catch (err) {
+    return null;
+  }
+}
+
 /**
  * Update existing user
  * @param {string} id - User ID
- * @param {string} name - Name
+ * @param {string} namaLengkap - Name
  * @param {string} email - Email
  * @returns {boolean}
  */
-async function updateUser(id, name, email) {
+async function updateUser(id, namaLengkap, email) {
   const user = await usersRepository.getUser(id);
 
   // User not found
@@ -78,7 +110,7 @@ async function updateUser(id, name, email) {
   }
 
   try {
-    await usersRepository.updateUser(id, name, email);
+    await usersRepository.updateUser(id, namaLengkap, email);
   } catch (err) {
     return null;
   }
@@ -162,8 +194,28 @@ async function changePassword(userId, password) {
   return true;
 }
 
+async function changePin(userId, password) {
+  const user = await usersRepository.getUser(userId);
+
+  // Check if user not found
+  if (!user) {
+    return null;
+  }
+
+  const changeSuccess = await usersRepository.changePassword(
+    userId,
+    hashedPassword
+  );
+
+  if (!changeSuccess) {
+    return null;
+  }
+
+  return true;
+}
+
 /**
- * Change Pagination, sort, search
+ * Change user password
  * @param {Integer} page_number - Page
  * @param {Integer} page_size - Limit
  * @param {String} search - Search
@@ -187,11 +239,11 @@ async function paginate(page_number, page_size, search, sort) {
   }
 
   // Sort
+  // Apply sorting based on sort criteria
   if (sort) {
     const [email, order] = sort.split(':');
     filter.sort((a, b) => {
       if (order === 'desc') {
-        // menggunakan localeCompare sebagai pembanding antara string sesuai kaidah antara huruf
         return b[email].localeCompare(a[email]);
       } else {
         return a[email].localeCompare(b[email]);
@@ -216,11 +268,14 @@ async function paginate(page_number, page_size, search, sort) {
 module.exports = {
   getUsers,
   getUser,
+  balanced,
   createUser,
+  deposit,
   updateUser,
   deleteUser,
   emailIsRegistered,
   checkPassword,
   changePassword,
+  changePin,
   paginate,
 };
